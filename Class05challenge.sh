@@ -12,9 +12,9 @@
 
         read -p "Enter the PID of the process to kill (or Cltr + C to quit): " pid
 # Check for quit 
-     #   if [[ "$pid" == "q" ]]; then 
-      #      break
-       # fi   
-   # Kill the process with the given PID
-    #kill -9 "$pid"
+        if [[ "$pid" == "q" ]]; then 
+            break
+        fi   
+    Kill the process with the given PID
+    kill -9 "$pid"
 done
