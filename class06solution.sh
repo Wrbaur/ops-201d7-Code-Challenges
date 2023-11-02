@@ -10,12 +10,13 @@
 # your script must use at least one array, one loop, and one coniditonal. 
 
 # Declare an array - Contains a list of files 
-files=(file1.txt file2.txt file 3.txt file4.txt)
+files=("file1.txt" "file2.txt" "file3.txt" "file4.txt")
 
 # For loop - do some action for each file in the list 
-for File in "${files[@]}"
+for file in "${files[@]}"; do
     # Conditional - check if files exist 
-    if [ -f "$file"]; then
+    if [ -f "$file" ]; then
+
     # If files exist then print out a statement telling the user the file exists 
         echo "$file exists."
     # Else statement - catch all other situations
