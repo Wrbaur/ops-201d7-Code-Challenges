@@ -11,22 +11,24 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-# Display information about the computer
-echo "=== Computer Information ==="
-lshw -short -C system #| grep -E "product:|vendor:|physical id:|bus info:|width:"
-# the -short is for output comands and the -C is for class
-# Display information about the CPU
-echo "=== CPU Information ==="
-lshw -short -C cpu #| grep -E "product:|vendor:|physical id:|bus info:|width:"
+# Function to display information for a given component
+display_info() {
+  component=$1
+  echo "=== $component Information ==="
+  lshw -C "$component" | awk -F ': ' '/description|product|vendor|physical id|bus info|width|clock|capabilities|configuration|resources|logical name|version|serial|size|capacity/ {print $2}'
+}
 
-# Display information about RAM
-echo "=== RAM Information ==="
-lshw -short -C memory #| grep -E "description:|physical id:|size:"
+# Display information for the computer
+display_info system
 
-# Display information about the Display adapter
-echo "=== Display Adapter Information ==="
-lshw -short -C display #| grep -E "description:|product:|vendor:|physical id:|bus info:|width:|clock:|capabilities:|configuration:|resources:"
+# Display information for the CPU
+display_info cpu
 
-# Display information about Network adapters
-echo "=== Network Adapter Information ==="
-lshw -short -C network #| grep -E "description:|product:|vendor:|physical id:|bus info:|logical name:|version:|serial:|size:|capacity:|width:|clock:|capabilities:|configuration:|resources:"
+# Display information for RAM
+display_info memory
+
+# Display information for the Display adapter
+display_info display
+
+# Display information for Network adapters
+display_info network
