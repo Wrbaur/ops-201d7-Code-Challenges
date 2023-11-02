@@ -15,7 +15,7 @@ fi
 display_info() {
   component=$1
   echo "=== $component Information ==="
-  lshw -C "$component" | awk -F ': ' '/description|product|vendor|physical id|bus info|width|clock|capabilities|configuration|resources|logical name|version|serial|size|capacity/ {print $2}'
+  lshw -C "$component" | grep -A1 'description' | grep -E 'description|product|vendor|physical id|bus info|width|clock|capabilities|configuration|resources|logical name|version|serial|size|capacity' | cut -d ':' -f 2
 }
 
 # Display information for the computer
