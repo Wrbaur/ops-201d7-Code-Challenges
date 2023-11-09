@@ -1,27 +1,33 @@
-# Enable File and Printer Sharing
-Enable-NetFirewallRule -DisplayGroup "File and Printer Sharing"
+#Purpose: Automate the configureing of a new system by running this set of commands 
 
-# Allow ICMP traffic (Ping)
-Set-NetFirewallRule -Name "FPS-ICMP4-ERQ-In" -Enabled True
-Set-NetFirewallRule -Name "FPS-ICMP6-ERQ-In" -Enabled True
 
-# Enable Remote Management (WinRM)
-Enable-PSRemoting -Force
+### Main 
 
-# Remove bloatware - You can customize the list of apps to remove
-$BloatwareApps = @(
-    "Microsoft.549981C3F5F10",
-    "Microsoft.549981C3F5F10_2.2004.2.0_x64__8wekyb3d8bbwe",
-    # Add more app package names to remove here
-)
 
-foreach ($App in $BloatwareApps) {
-    Get-AppxPackage -allusers | Where-Object { $_.PackageFamilyName -eq $App } | Remove-AppxPackage
-}
+# This line enables file and printer sharing 
+set-firewallprofile -profile domain,public,private -enable $false
+Set-NetFirewallRule -Displaygroup "File and printer Sharing" -Eanble True
 
-# Enable Hyper-V
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+# This line enables ICMP (pring traffic)
+netsh advfirewall firewall add rule name="Allow incoming pin requests IPv4" dir=in action=allow protocol=icmpv4
 
-# Disable SMBv1
-Set-SmbServerConfiguration -EnableSMB1Protocol $false
-Set-SmbClientConfiguration -EnableSMB1Protocol $false
+# This line enables remote management 
+    # Options 1
+        reg add "HKLM/System/CurrentControlSet/Control/Terminal Server" /v fDenyTSConnections /t REG_DWORD /D 0 F
+    # Option 2
+            Set-Service -Name "WinRM" -StartupType "Automatic" 
+            Start-Service "WinRM" 
+            Set-NetFirewallRule -Name "WINRM-HTTP-In-TCP" -Enabled True
+
+# This line removes bloatware 
+iex ((New-Objectsystem.net.webclient).downloadstring('https://git.io/deblot'))
+
+
+# This line enables HyperV
+Get-WindowsOptionalFeature -online -FeatureName Microsoft-Hyper-V
+Enable-WindowsOptionalFeature -FeatureName Microsoft-Hyper-V -All
+
+# This line disables SMBv1, and insecure protocol
+# The below will allow you to check its status
+# Get-SmbServerConfiguration
+Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force    
